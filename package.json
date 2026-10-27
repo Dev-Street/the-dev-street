@@ -1,0 +1,26 @@
+{
+  "name": "the-dev-street",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/tailwind.css -o ./assets/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./src/tailwind.css -o ./assets/tailwind.css --watch",
+    "dev": "shopify theme dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dev-Street/the-dev-street.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Dev-Street/the-dev-street/issues"
+  },
+  "homepage": "https://github.com/Dev-Street/the-dev-street#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}
