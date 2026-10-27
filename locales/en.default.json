@@ -179,7 +179,22 @@
       "taxes_included": "Taxes included.",
       "duties_included": "Duties included.",
       "duties_and_taxes_included": "Duties and taxes included.",
-      "shipping_policy_html": "<a href=\"{{ link }}\">Shipping</a> calculated at checkout."
+      "shipping_policy_html": "<a href=\"{{ link }}\">Shipping</a> calculated at checkout.",
+      "gift_wrap": {
+        "label": "Wrap as a gift?",
+        "price": "(+{{ price }})",
+        "free": "(Free)",
+        "to_label": "To",
+        "to_placeholder": "Recipient's name",
+        "from_label": "From",
+        "from_placeholder": "Sender's name",
+        "message_label": "Gift message",
+        "message_placeholder": "Type your message here",
+        "characters_remaining": {
+          "one": "{{ count }} character remaining",
+          "other": "{{ count }} characters remaining"
+        }
+      }
     },
     "modal": {
       "label": "Media gallery"
