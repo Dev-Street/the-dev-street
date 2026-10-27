@@ -1,5 +1,6 @@
 {%- liquid
   assign field_classes = 'tw-block tw-w-full tw-px-4 tw-border-solid tw-border-input tw-border-input-border tw-rounded-input tw-bg-transparent tw-font-body tw-text-base tw-text-foreground placeholder:tw-text-foreground/50 md:tw-text-sm'
+  assign hint_id = id | append: '-Limit'
 -%}
 
 <div>
@@ -14,6 +15,7 @@
       maxlength="{{ max_length }}"
       placeholder="{{ placeholder }}"
       rows="4"
+      aria-describedby="{{ hint_id }}"
     ></textarea>
   {%- else -%}
     <input
@@ -25,6 +27,11 @@
       maxlength="{{ max_length }}"
       placeholder="{{ placeholder }}"
       autocomplete="{{ autocomplete | default: 'off' }}"
+      aria-describedby="{{ hint_id }}"
     >
   {%- endif -%}
+
+  <p id="{{ hint_id }}" class="tw-mt-2 tw-mb-0 tw-text-xs tw-text-foreground/75">
+    {{ 'products.product.gift_wrap.character_limit' | t: count: max_length }}
+  </p>
 </div>

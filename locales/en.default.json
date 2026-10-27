@@ -190,9 +190,9 @@
         "from_placeholder": "Sender's name",
         "message_label": "Gift message",
         "message_placeholder": "Type your message here",
-        "characters_remaining": {
-          "one": "{{ count }} character remaining",
-          "other": "{{ count }} characters remaining"
+        "character_limit": {
+          "one": "Up to {{ count }} character",
+          "other": "Up to {{ count }} characters"
         }
       }
     },
