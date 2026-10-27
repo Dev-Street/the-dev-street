@@ -36,25 +36,25 @@
 -%}
 
 {%- if is_available -%}
-    <gift-wrap class="tw-block" {{ block.shopify_attributes }}>
-        <div class="tw-flex tw-items-center tw-gap-2">
+    <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-x-2" {{ block.shopify_attributes }}>
         <input
             type="checkbox"
             id="{{ toggle_id }}"
-            class="tw-h-4 !tw-w-4 !tw-m-0 tw-shrink-0 tw-cursor-pointer tw-accent-foreground"
+            class="tw-peer tw-h-4 !tw-w-4 !tw-m-0 tw-shrink-0 tw-cursor-pointer tw-accent-foreground"
             name="properties[{{ property_gift_wrap }}]"
             value="Yes"
             form="{{ product_form_id }}"
             aria-controls="{{ fields_id }}"
-            data-gift-wrap-toggle
         >
-        <label for="{{ toggle_id }}" class="tw-text-sm tw-text-foreground tw-cursor-pointer">
+        <label for="{{ toggle_id }}" class="tw-flex-1 tw-text-sm tw-text-foreground tw-cursor-pointer">
             {{ 'products.product.gift_wrap.label' | t }}
             {{ price_label }}
         </label>
-        </div>
 
-        <fieldset class="tw-m-0 tw-min-w-0 tw-p-0 tw-border-0 tw-space-y-4" id="{{ fields_id }}" hidden disabled data-gift-wrap-fields>
+        <fieldset
+            id="{{ fields_id }}"
+            class="tw-hidden tw-w-full tw-m-0 tw-min-w-0 tw-p-0 tw-border-0 tw-space-y-4 peer-checked:tw-block"
+        >
         <legend class="tw-sr-only">{{ 'products.product.gift_wrap.label' | t }}</legend>
 
         {%- render 'gift-wrap-field',
@@ -95,5 +95,5 @@
             >
         {%- endif -%}
         </fieldset>
-    </gift-wrap>
+    </div>
 {%- endif -%}
