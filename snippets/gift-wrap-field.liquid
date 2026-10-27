@@ -1,0 +1,26 @@
+<div>
+  <label for="{{ id }}">{{ label }}</label>
+
+  {%- if multiline -%}
+    <textarea
+      id="{{ id }}"
+      name="properties[{{ name }}]"
+      form="{{ form_id }}"
+      maxlength="{{ max_length }}"
+      placeholder="{{ placeholder }}"
+      rows="4"
+      data-gift-wrap-input
+    ></textarea>
+  {%- else -%}
+    <input
+      type="text"
+      id="{{ id }}"
+      name="properties[{{ name }}]"
+      form="{{ form_id }}"
+      maxlength="{{ max_length }}"
+      placeholder="{{ placeholder }}"
+      autocomplete="{{ autocomplete | default: 'off' }}"
+      data-gift-wrap-input
+    >
+  {%- endif -%}
+</div>

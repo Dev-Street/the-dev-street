@@ -1,1 +1,98 @@
-<h2>Test</h2>
+{%- liquid
+    assign property_gift_wrap = 'Gift wrap'
+    assign property_to = 'To'
+    assign property_from = 'From'
+    assign property_message = 'Gift message'
+
+    assign gift_wrap_product = block.settings.gift_wrap_product
+    assign gift_wrap_variant = gift_wrap_product.selected_or_first_available_variant
+
+    assign is_available = true
+    if gift_wrap_product != blank and gift_wrap_variant.available == false
+        assign is_available = false
+    endif
+
+    assign price_label = 'products.product.gift_wrap.free' | t
+    if gift_wrap_product != blank and gift_wrap_variant.price > 0
+        assign price = gift_wrap_variant.price | money
+        if settings.currency_code_enabled
+            assign price = gift_wrap_variant.price | money_with_currency
+        endif
+        assign price_label = 'products.product.gift_wrap.price' | t: price: price
+    endif
+
+    assign toggle_id = 'GiftWrap-Toggle-' | append: block.id
+    assign fields_id = 'GiftWrap-Fields-' | append: block.id
+    assign to_id = 'GiftWrap-To-' | append: block.id
+    assign from_id = 'GiftWrap-From-' | append: block.id
+    assign message_id = 'GiftWrap-Message-' | append: block.id
+
+    assign to_label = 'products.product.gift_wrap.to_label' | t
+    assign to_placeholder = 'products.product.gift_wrap.to_placeholder' | t
+    assign from_label = 'products.product.gift_wrap.from_label' | t
+    assign from_placeholder = 'products.product.gift_wrap.from_placeholder' | t
+    assign message_label = 'products.product.gift_wrap.message_label' | t
+    assign message_placeholder = 'products.product.gift_wrap.message_placeholder' | t
+-%}
+
+{%- if is_available -%}
+    <gift-wrap {{ block.shopify_attributes }}>
+        <div>
+        <input
+            type="checkbox"
+            id="{{ toggle_id }}"
+            name="properties[{{ property_gift_wrap }}]"
+            value="Yes"
+            form="{{ product_form_id }}"
+            aria-controls="{{ fields_id }}"
+            data-gift-wrap-toggle
+        >
+        <label for="{{ toggle_id }}">
+            {{ 'products.product.gift_wrap.label' | t }}
+            {{ price_label }}
+        </label>
+        </div>
+
+        <fieldset id="{{ fields_id }}" hidden disabled data-gift-wrap-fields>
+        <legend>{{ 'products.product.gift_wrap.label' | t }}</legend>
+
+        {%- render 'gift-wrap-field',
+            id: to_id,
+            name: property_to,
+            label: to_label,
+            placeholder: to_placeholder,
+            max_length: block.settings.to_max_length,
+            form_id: product_form_id
+        -%}
+
+        {%- render 'gift-wrap-field',
+            id: from_id,
+            name: property_from,
+            label: from_label,
+            placeholder: from_placeholder,
+            max_length: block.settings.from_max_length,
+            form_id: product_form_id,
+            autocomplete: 'name'
+        -%}
+
+        {%- render 'gift-wrap-field',
+            id: message_id,
+            name: property_message,
+            label: message_label,
+            placeholder: message_placeholder,
+            max_length: block.settings.message_max_length,
+            form_id: product_form_id,
+            multiline: true
+        -%}
+
+        {%- if gift_wrap_product != blank -%}
+            <input
+            type="hidden"
+            name="gift_wrap_variant_id"
+            value="{{ gift_wrap_variant.id }}"
+            form="{{ product_form_id }}"
+            >
+        {%- endif -%}
+        </fieldset>
+    </gift-wrap>
+{%- endif -%}
