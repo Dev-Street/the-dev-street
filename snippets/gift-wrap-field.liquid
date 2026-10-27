@@ -1,9 +1,14 @@
+{%- liquid
+  assign field_classes = 'tw-block tw-w-full tw-px-4 tw-border-solid tw-border-input tw-border-input-border tw-rounded-input tw-bg-transparent tw-font-body tw-text-base tw-text-foreground placeholder:tw-text-foreground/50 md:tw-text-sm'
+-%}
+
 <div>
-  <label for="{{ id }}">{{ label }}</label>
+  <label for="{{ id }}" class="tw-block tw-mb-2 tw-text-sm tw-text-foreground">{{ label }}</label>
 
   {%- if multiline -%}
     <textarea
       id="{{ id }}"
+      class="{{ field_classes }} tw-h-32 tw-py-3 tw-resize-y"
       name="properties[{{ name }}]"
       form="{{ form_id }}"
       maxlength="{{ max_length }}"
@@ -15,6 +20,7 @@
     <input
       type="text"
       id="{{ id }}"
+      class="{{ field_classes }} tw-h-10"
       name="properties[{{ name }}]"
       form="{{ form_id }}"
       maxlength="{{ max_length }}"
