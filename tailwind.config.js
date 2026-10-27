@@ -1,5 +1,33 @@
+import defaultTheme from "tailwindcss/defaultTheme";
+
+const REM_SCALE = 1.6;
+
+/**
+ * Multiplies every rem value in a string by REM_SCALE
+ * @param {string} value e.g. '0.75rem'
+ * @returns {string} e.g. '1.2rem'
+ */
+const scaleRem = (value) =>
+  value.replace(
+    /(-?\d*\.?\d+)rem/g,
+    (_, number) => `${+(number * REM_SCALE).toFixed(4)}rem`,
+  );
+
+/**
+ * Recursively scales rem values in a theme scale (strings, arrays or objects)
+ * @param {string|Array|Object} values
+ */
+const scaleValues = (values) => {
+  if (typeof values === "string") return scaleRem(values);
+  if (Array.isArray(values)) return values.map(scaleValues);
+
+  return Object.fromEntries(
+    Object.entries(values).map(([key, value]) => [key, scaleValues(value)]),
+  );
+};
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   prefix: "tw-",
   content: [
     "./layout/*.liquid",
@@ -13,7 +41,11 @@ module.exports = {
     preflight: false,
   },
   theme: {
+    spacing: scaleValues(defaultTheme.spacing),
+    fontSize: scaleValues(defaultTheme.fontSize),
+    lineHeight: scaleValues(defaultTheme.lineHeight),
+    borderRadius: scaleValues(defaultTheme.borderRadius),
+    maxWidth: (utils) => scaleValues(defaultTheme.maxWidth(utils)),
     extend: {},
   },
-  plugins: [],
 };
