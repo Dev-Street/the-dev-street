@@ -1,11 +1,31 @@
-{%- liquid
-  # must match the property names in snippets/gift-wrap.liquid
-  assign to = item.properties['To']
-  assign from = item.properties['From']
-  assign message = item.properties['Gift message']
+{% comment %}
+  Cart gift wrap
 
-  # paid gift wrap is a nested line under this item, tagged with _gift_wrap
+  Shows a cart line's gift wrap selection, with an edit panel to change the
+  recipient, sender and message, or remove gift wrap. Saving is handled by
+  the cart-gift-wrap component in assets/cart-gift-wrap.js.
+
+  Accepts:
+  - item: {Object} - The cart line item gift wrap was added to
+
+  Usage:
+  {% render 'cart-gift-wrap', item: item %}
+{% endcomment %}
+
+{%- liquid
+  # @note: must match the property names in snippets/gift-wrap.liquid
+  assign property_gift_wrap = 'Gift wrap'
+  assign property_to = 'To'
+  assign property_from = 'From'
+  assign property_message = 'Gift message'
+
+  assign to = item.properties[property_to]
+  assign from = item.properties[property_from]
+  assign message = item.properties[property_message]
+
+  # @note: paid gift wrap is a nested line under this item, tagged with _gift_wrap
   assign price_label = 'products.product.gift_wrap.free' | t
+  assign gift_wrap_line_key = ''
   for cart_item in cart.items
     if cart_item.parent_relationship.parent.key != item.key
       continue
@@ -13,43 +33,139 @@
     if cart_item.properties['_gift_wrap'] == blank
       continue
     endif
+    assign gift_wrap_line_key = cart_item.key
     if cart_item.final_line_price > 0
       assign price = cart_item.final_line_price | money
       assign price_label = 'products.product.gift_wrap.price' | t: price: price
     endif
     break
   endfor
+
+  assign label = 'products.product.gift_wrap.label' | t
+  assign id_prefix = 'CartGiftWrap-' | append: item.index
+  assign toggle_id = id_prefix | append: '-Toggle'
+  assign fields_id = id_prefix | append: '-Fields'
+  assign to_id = id_prefix | append: '-To'
+  assign from_id = id_prefix | append: '-From'
+  assign message_id = id_prefix | append: '-Message'
+
+  assign to_label = 'products.product.gift_wrap.to_label' | t
+  assign to_placeholder = 'products.product.gift_wrap.to_placeholder' | t
+  assign from_label = 'products.product.gift_wrap.from_label' | t
+  assign from_placeholder = 'products.product.gift_wrap.from_placeholder' | t
+  assign message_label = 'products.product.gift_wrap.message_label' | t
+  assign message_placeholder = 'products.product.gift_wrap.message_placeholder' | t
 -%}
 
-<div class="tw-p-4 tw-bg-foreground/5 tw-text-foreground">
-  <p class="tw-flex tw-items-center tw-gap-2 tw-m-0 tw-text-sm">
-    <svg class="tw-h-4 tw-w-4 tw-shrink-0" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-      <rect width="16" height="16" rx="2" class="tw-fill-foreground"></rect>
-      <path
-        d="M4 8.5l2.5 2.5L12 5.5"
-        class="tw-fill-none tw-stroke-background"
-        stroke-width="1.75"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      ></path>
-    </svg>
-    {{ 'products.product.gift_wrap.label' | t }}
-    {{ price_label }}
-  </p>
+<cart-gift-wrap
+  class="tw-relative tw-block tw-p-4 tw-bg-foreground/5 tw-text-foreground"
+  data-line-key="{{ item.key }}"
+  data-quantity="{{ item.quantity }}"
+  data-properties="{{ item.properties | json | escape }}"
+  {% if gift_wrap_line_key != blank %}
+    data-gift-wrap-line-key="{{ gift_wrap_line_key }}"
+  {% endif %}
+>
+  <details class="tw-peer tw-group">
+    <summary class="tw-absolute tw-top-4 tw-right-4 tw-flex tw-items-center tw-gap-1 tw-text-sm tw-underline">
+      <span class="tw-sr-only">{{ 'products.product.gift_wrap.edit_label' | t: title: item.product.title }}</span>
+      <span class="group-open:tw-hidden" aria-hidden="true">{{ 'products.product.gift_wrap.edit' | t }}</span>
+      <span class="tw-hidden group-open:tw-inline" aria-hidden="true">{{ 'products.product.gift_wrap.cancel' | t }}</span>
+      <svg class="tw-h-3 tw-w-3 group-open:tw-hidden" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path d="M11.5 2.5l2 2L6 12H4v-2l7.5-7.5z" class="tw-fill-none tw-stroke-current" stroke-width="1.25" stroke-linejoin="round"></path>
+      </svg>
+      <svg class="tw-hidden tw-h-3 tw-w-3 group-open:tw-block" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path d="M4 4l8 8M12 4l-8 8" class="tw-stroke-current" stroke-width="1.25" stroke-linecap="round"></path>
+      </svg>
+    </summary>
 
-  {%- if to != blank or from != blank or message != blank -%}
-    <p class="tw-mt-2 tw-mb-0 tw-text-xs tw-text-foreground/75 tw-break-words">
-      {%- if to != blank -%}
-        {{ 'products.product.gift_wrap.summary_to' | t: name: to }}
-      {%- endif -%}
-      {%- if from != blank -%}
-        {%- if to != blank %} / {% endif -%}
-        {{ 'products.product.gift_wrap.summary_from' | t: name: from }}
-      {%- endif -%}
-      {%- if message != blank -%}
-        {%- if to != blank or from != blank %} / {% endif -%}
-        {{ 'products.product.gift_wrap.summary_message' | t: message: message }}
-      {%- endif -%}
+    <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-x-2">
+      <input
+        type="checkbox"
+        id="{{ toggle_id }}"
+        class="tw-peer tw-h-4 !tw-w-4 !tw-m-0 tw-shrink-0 tw-cursor-pointer tw-accent-foreground"
+        aria-controls="{{ fields_id }}"
+        data-gift-wrap-toggle="{{ property_gift_wrap }}"
+        checked
+      >
+      <label for="{{ toggle_id }}" class="tw-flex-1 tw-pr-20 tw-text-sm tw-cursor-pointer">
+        {{ label }}
+        {{ price_label }}
+      </label>
+
+      <fieldset
+        id="{{ fields_id }}"
+        class="tw-hidden tw-w-full tw-m-0 tw-min-w-0 tw-p-0 tw-border-0 tw-space-y-4 peer-checked:tw-block"
+      >
+        <legend class="tw-sr-only">{{ label }}</legend>
+
+        {%- render 'gift-wrap-field',
+          id: to_id,
+          name: property_to,
+          label: to_label,
+          placeholder: to_placeholder,
+          value: to,
+          max_length: settings.gift_wrap_to_max_length
+        -%}
+
+        {%- render 'gift-wrap-field',
+          id: from_id,
+          name: property_from,
+          label: from_label,
+          placeholder: from_placeholder,
+          value: from,
+          max_length: settings.gift_wrap_from_max_length,
+          autocomplete: 'name'
+        -%}
+
+        {%- render 'gift-wrap-field',
+          id: message_id,
+          name: property_message,
+          label: message_label,
+          placeholder: message_placeholder,
+          value: message,
+          max_length: settings.gift_wrap_message_max_length,
+          multiline: true
+        -%}
+      </fieldset>
+
+      <button type="button" class="button tw-w-full tw-mt-4" data-gift-wrap-update>
+        {{ 'products.product.gift_wrap.update' | t }}
+      </button>
+      <p class="tw-w-full tw-mt-2 tw-mb-0 tw-text-sm empty:tw-hidden" role="alert" data-gift-wrap-error></p>
+    </div>
+  </details>
+
+  <div class="peer-open:tw-hidden">
+    <p class="tw-flex tw-items-center tw-gap-2 tw-m-0 tw-pr-20 tw-text-sm">
+      <svg class="tw-h-4 tw-w-4 tw-shrink-0" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <rect width="16" height="16" rx="2" class="tw-fill-foreground"></rect>
+        <path
+          d="M4 8.5l2.5 2.5L12 5.5"
+          class="tw-fill-none tw-stroke-background"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
+      {{ label }}
+      {{ price_label }}
     </p>
-  {%- endif -%}
-</div>
+
+    {%- if to != blank or from != blank or message != blank -%}
+      <p class="tw-mt-2 tw-mb-0 tw-text-xs tw-text-foreground/75 tw-break-words">
+        {%- if to != blank -%}
+          {{ 'products.product.gift_wrap.summary_to' | t: name: to }}
+        {%- endif -%}
+        {%- if from != blank -%}
+          {%- if to != blank %} / {% endif -%}
+          {{ 'products.product.gift_wrap.summary_from' | t: name: from }}
+        {%- endif -%}
+        {%- if message != blank -%}
+          {%- if to != blank or from != blank %} / {% endif -%}
+          {{ 'products.product.gift_wrap.summary_message' | t: message: message }}
+        {%- endif -%}
+      </p>
+    {%- endif -%}
+  </div>
+</cart-gift-wrap>

@@ -196,7 +196,11 @@
         },
         "summary_to": "To: {{ name }}",
         "summary_from": "From: {{ name }}",
-        "summary_message": "“{{ message }}”"
+        "summary_message": "“{{ message }}”",
+        "edit": "Edit",
+        "edit_label": "Edit gift wrap for {{ title }}",
+        "cancel": "Cancel",
+        "update": "Update"
       }
     },
     "modal": {
