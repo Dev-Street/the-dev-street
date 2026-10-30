@@ -42,12 +42,14 @@ if (!customElements.get('product-form')) {
         }
         config.body = formData;
 
-        const variantId = formData.get('id');
-        const quantity = parseInt(formData.get('quantity')) || 1;
+ const variantId = formData.get('id') ?? formData.get('items[0][id]');
+        const quantity = parseInt(formData.get('quantity') ?? formData.get('items[0][quantity]')) || 1;
         const linesUpdateDeferred = this.createCartLinesUpdateEvent(variantId, quantity);
 
         fetch(`${routes.cart_add_url}`, config)
           .then((response) => response.json())
+          // @note: adding an items list returns { items, sections }, reshape it 
+          .then((response) => (response.items ? { ...response.items[0], sections: response.sections } : response))
           .then((response) => {
             if (response.status) {
               publish(PUB_SUB_EVENTS.cartError, {
@@ -118,6 +120,57 @@ if (!customElements.get('product-form')) {
 
             CartPerformance.measureFromEvent("add:user-action", evt);
           });
+      }
+
+      /**
+       * Builds the add to cart form data. Gift wrap details are only sent when
+       * the gift wrap checkbox is ticked, and a paid gift wrap product is added
+       * as a nested cart line under the product.
+       * @returns {FormData}
+       */
+      getFormData() {
+        const giftWrapToggleEl = [...this.form.elements].find((el) => el.matches('[data-gift-wrap-toggle]'));
+        if (!giftWrapToggleEl) return new FormData(this.form);
+
+        const giftWrapFieldsEl = document.getElementById(giftWrapToggleEl.getAttribute('aria-controls'));
+        if (!giftWrapFieldsEl) return new FormData(this.form);
+
+        // Disabled fields are left out of FormData, so disabling the gift wrap
+        // fields while reading the form drops them when the box isn't ticked
+        giftWrapFieldsEl.disabled = !giftWrapToggleEl.checked;
+        const formData = new FormData(this.form);
+        giftWrapFieldsEl.disabled = false;
+
+        const giftWrapVariantId = formData.get('gift_wrap_variant_id');
+        if (!giftWrapVariantId) return formData;
+
+        return this.getNestedGiftWrapFormData(formData, giftWrapVariantId);
+      }
+
+      /**
+       * Converts single product form data into an items list, with the gift
+       * wrap variant nested under the product so it's removed along with it
+       * @param {FormData} formData Form data for a single product
+       * @param {string} giftWrapVariantId Variant ID of the gift wrap product
+       * @returns {FormData}
+       */
+      getNestedGiftWrapFormData(formData, giftWrapVariantId) {
+        const itemsFormData = new FormData();
+        const itemFields = ['id', 'quantity', 'selling_plan'];
+
+        for (const [key, value] of formData) {
+          const isItemField = itemFields.includes(key) || key.startsWith('properties[');
+          if (!isItemField) continue;
+
+          // id -> items[0][id], properties[To] -> items[0][properties][To]
+          itemsFormData.append(key.replace(/^[^[]+/, (name) => `items[0][${name}]`), value);
+        }
+
+        itemsFormData.append('items[1][id]', giftWrapVariantId);
+        itemsFormData.append('items[1][quantity]', 1);
+        itemsFormData.append('items[1][parent_id]', formData.get('id'));
+
+        return itemsFormData;
       }
 
       handleErrorMessage(errorMessage = false) {
