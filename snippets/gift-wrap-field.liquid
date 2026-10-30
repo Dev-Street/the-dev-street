@@ -1,0 +1,66 @@
+{% comment %}
+  Gift wrap field
+
+  Renders a labelled text input, or a textarea, for gift wrap details, with a
+  visually hidden hint describing its character limit.
+
+  Accepts:
+  - id: {String} - Unique ID for the input
+  - name: {String} - Line item property name the value is saved under
+  - label: {String} - Visible label text
+  - max_length: {Number} - Maximum number of characters allowed
+  - form_id: {String} - ID of the form the value submits with. When omitted, the field isn't submitted and is read by JS instead (optional)
+  - value: {String} - Current value (optional)
+  - placeholder: {String} - Placeholder text (optional)
+  - autocomplete: {String} - Browser autocomplete value, defaults to 'off' (optional)
+  - multiline: {Boolean} - Renders a textarea instead of a text input (optional)
+
+  Usage:
+  {% render 'gift-wrap-field', id: to_id, name: 'To', label: 'To', max_length: 30, form_id: product_form_id %}
+{% endcomment %}
+
+{%- liquid
+  # Shared by the input and textarea so field styles are defined once
+  assign field_classes = 'tw-block tw-w-full tw-px-4 tw-border-solid tw-border-input tw-border-input-border tw-rounded-input tw-bg-background tw-font-body tw-text-base tw-text-foreground placeholder:tw-text-foreground/60 md:tw-text-sm'
+  assign hint_id = id | append: '-Limit'
+-%}
+
+{%- capture field_attributes -%}
+  {%- if form_id != blank -%}
+    name="properties[{{ name }}]" form="{{ form_id }}"
+  {%- else -%}
+    data-gift-wrap-input="{{ name }}"
+  {%- endif -%}
+{%- endcapture -%}
+
+<div>
+  <label for="{{ id }}" class="tw-block tw-mb-2 tw-text-sm tw-text-foreground">{{ label }}</label>
+
+  {%- if multiline -%}
+    <textarea
+      id="{{ id }}"
+      class="{{ field_classes }} tw-h-32 tw-py-3 tw-resize-y"
+      {{ field_attributes }}
+      maxlength="{{ max_length }}"
+      placeholder="{{ placeholder }}"
+      rows="4"
+      aria-describedby="{{ hint_id }}"
+    >{{ value | escape }}</textarea>
+  {%- else -%}
+    <input
+      type="text"
+      id="{{ id }}"
+      class="{{ field_classes }} tw-h-10"
+      {{ field_attributes }}
+      value="{{ value | escape }}"
+      maxlength="{{ max_length }}"
+      placeholder="{{ placeholder }}"
+      autocomplete="{{ autocomplete | default: 'off' }}"
+      aria-describedby="{{ hint_id }}"
+    >
+  {%- endif -%}
+
+  <p id="{{ hint_id }}" class="tw-sr-only">
+    {{ 'products.product.gift_wrap.character_limit' | t: count: max_length }}
+  </p>
+</div>

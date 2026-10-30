@@ -12,6 +12,7 @@
 
 <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'cart-gift-wrap.js' | asset_url }}" defer="defer"></script>
 
 <style>
   .drawer {
@@ -119,9 +120,21 @@
                       </th>
                     </tr>
                   </thead>
-
                   <tbody role="rowgroup">
                     {%- for item in cart.items -%}
+                      {%- liquid
+                        # Gift wrap lines are shown in their product's gift wrap summary instead
+                        if item.properties['_gift_wrap']
+                          continue
+                        endif
+
+                        # Property names must match snippets/gift-wrap.liquid
+                        assign gift_wrap_properties = 'Gift wrap,To,From,Gift message' | split: ','
+                        assign has_gift_wrap = false
+                        if item.properties['Gift wrap']
+                          assign has_gift_wrap = true
+                        endif
+                      -%}
                       <tr
                         id="CartDrawer-Item-{{ item.index | plus: 1 }}"
                         class="cart-item{% if item.parent_relationship.parent != null %} cart-item__nested-line{% endif %}"
@@ -204,6 +217,9 @@
                               {%- endif -%}
 
                               {%- for property in item.properties -%}
+                                {%- if has_gift_wrap and gift_wrap_properties contains property.first -%}
+                                  {%- continue -%}
+                                {%- endif -%}
                                 {%- assign property_first_char = property.first | slice: 0 -%}
                                 {%- if property.last != blank and property_first_char != '_' -%}
                                   <div class="product-option">
@@ -473,6 +489,12 @@
                             </div>
                           </quantity-popover>
                         </td>
+
+                        {%- if has_gift_wrap -%}
+                          <td class="tw-col-span-full" role="cell" headers="CartDrawer-ColumnProduct">
+                            {%- render 'cart-gift-wrap', item: item -%}
+                          </td>
+                        {%- endif -%}
                       </tr>
                     {%- endfor -%}
                   </tbody>

@@ -46,6 +46,21 @@ export default {
     lineHeight: scaleValues(defaultTheme.lineHeight),
     borderRadius: scaleValues(defaultTheme.borderRadius),
     maxWidth: (utils) => scaleValues(defaultTheme.maxWidth(utils)),
-    extend: {},
+    extend: {
+      colors: {
+        foreground: 'rgba(var(--color-foreground), <alpha-value>)',
+        background: 'rgba(var(--color-background), <alpha-value>)',
+        'input-border': 'rgba(var(--color-foreground), var(--inputs-border-opacity))',
+      },
+      borderWidth: {
+        input: "var(--inputs-border-width)",
+      },
+      borderRadius: {
+        input: "var(--inputs-radius)",
+      },
+      fontFamily: {
+        body: "var(--font-body-family)",
+      },
+    },
   },
 };
