@@ -1,5 +1,22 @@
 {
   "settings_schema": {
+    "gift_wrap": {
+      "name": "Gift wrap",
+      "settings": {
+        "paragraph": {
+          "content": "Character limits for the gift wrap fields on product pages and in the cart."
+        },
+        "to_max_length": {
+          "label": "To"
+        },
+        "from_max_length": {
+          "label": "From"
+        },
+        "message_max_length": {
+          "label": "Gift message"
+        }
+      }
+    },
     "global": {
       "settings": {
         "header__border": {
@@ -2319,18 +2336,6 @@
             "gift_wrap_product": {
               "label": "Gift wrap product",
               "info": "Its price is added to the cart when a customer selects gift wrap. Leave empty to offer gift wrap for free."
-            },
-            "character_limits": {
-              "content": "Character limits"
-            },
-            "to_max_length": {
-              "label": "To"
-            },
-            "from_max_length": {
-              "label": "From"
-            },
-            "message_max_length": {
-              "label": "Gift message"
             }
           }
         }

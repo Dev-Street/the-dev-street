@@ -63,7 +63,7 @@
             name: property_to,
             label: to_label,
             placeholder: to_placeholder,
-            max_length: block.settings.to_max_length,
+            max_length: settings.gift_wrap_to_max_length,
             form_id: product_form_id
         -%}
 
@@ -72,7 +72,7 @@
             name: property_from,
             label: from_label,
             placeholder: from_placeholder,
-            max_length: block.settings.from_max_length,
+            max_length: settings.gift_wrap_from_max_length,
             form_id: product_form_id,
             autocomplete: 'name'
         -%}
@@ -82,7 +82,7 @@
             name: property_message,
             label: message_label,
             placeholder: message_placeholder,
-            max_length: block.settings.message_max_length,
+            max_length: settings.gift_wrap_message_max_length,
             form_id: product_form_id,
             multiline: true
         -%}
