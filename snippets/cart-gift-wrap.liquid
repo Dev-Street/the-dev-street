@@ -1,0 +1,55 @@
+{%- liquid
+  # must match the property names in snippets/gift-wrap.liquid
+  assign to = item.properties['To']
+  assign from = item.properties['From']
+  assign message = item.properties['Gift message']
+
+  # paid gift wrap is a nested line under this item, tagged with _gift_wrap
+  assign price_label = 'products.product.gift_wrap.free' | t
+  for cart_item in cart.items
+    if cart_item.parent_relationship.parent.key != item.key
+      continue
+    endif
+    if cart_item.properties['_gift_wrap'] == blank
+      continue
+    endif
+    if cart_item.final_line_price > 0
+      assign price = cart_item.final_line_price | money
+      assign price_label = 'products.product.gift_wrap.price' | t: price: price
+    endif
+    break
+  endfor
+-%}
+
+<div class="tw-p-4 tw-bg-foreground/5 tw-text-foreground">
+  <p class="tw-flex tw-items-center tw-gap-2 tw-m-0 tw-text-sm">
+    <svg class="tw-h-4 tw-w-4 tw-shrink-0" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <rect width="16" height="16" rx="2" class="tw-fill-foreground"></rect>
+      <path
+        d="M4 8.5l2.5 2.5L12 5.5"
+        class="tw-fill-none tw-stroke-background"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></path>
+    </svg>
+    {{ 'products.product.gift_wrap.label' | t }}
+    {{ price_label }}
+  </p>
+
+  {%- if to != blank or from != blank or message != blank -%}
+    <p class="tw-mt-2 tw-mb-0 tw-text-xs tw-text-foreground/75 tw-break-words">
+      {%- if to != blank -%}
+        {{ 'products.product.gift_wrap.summary_to' | t: name: to }}
+      {%- endif -%}
+      {%- if from != blank -%}
+        {%- if to != blank %} / {% endif -%}
+        {{ 'products.product.gift_wrap.summary_from' | t: name: from }}
+      {%- endif -%}
+      {%- if message != blank -%}
+        {%- if to != blank or from != blank %} / {% endif -%}
+        {{ 'products.product.gift_wrap.summary_message' | t: message: message }}
+      {%- endif -%}
+    </p>
+  {%- endif -%}
+</div>

@@ -48,9 +48,9 @@ export default {
     maxWidth: (utils) => scaleValues(defaultTheme.maxWidth(utils)),
     extend: {
       colors: {
-        foreground: "rgba(var(--color-foreground), <alpha-value>)",
-        "input-border":
-          "rgba(var(--color-foreground), var(--inputs-border-opacity))",
+        foreground: 'rgba(var(--color-foreground), <alpha-value>)',
+        background: 'rgba(var(--color-background), <alpha-value>)',
+        'input-border': 'rgba(var(--color-foreground), var(--inputs-border-opacity))',
       },
       borderWidth: {
         input: "var(--inputs-border-width)",

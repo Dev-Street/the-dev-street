@@ -193,7 +193,10 @@
         "character_limit": {
           "one": "Up to {{ count }} character",
           "other": "Up to {{ count }} characters"
-        }
+        },
+        "summary_to": "To: {{ name }}",
+        "summary_from": "From: {{ name }}",
+        "summary_message": "“{{ message }}”"
       }
     },
     "modal": {

@@ -31,7 +31,7 @@ if (!customElements.get('product-form')) {
         config.headers['X-Requested-With'] = 'XMLHttpRequest';
         delete config.headers['Content-Type'];
 
-        const formData = new FormData(this.form);
+        const formData = this.getFormData();
         if (this.cart) {
           formData.append(
             'sections',
@@ -42,7 +42,8 @@ if (!customElements.get('product-form')) {
         }
         config.body = formData;
 
- const variantId = formData.get('id') ?? formData.get('items[0][id]');
+        // @note: gift wrap sends an items list, where the product is the first item
+        const variantId = formData.get('id') ?? formData.get('items[0][id]');
         const quantity = parseInt(formData.get('quantity') ?? formData.get('items[0][quantity]')) || 1;
         const linesUpdateDeferred = this.createCartLinesUpdateEvent(variantId, quantity);
 
@@ -169,6 +170,8 @@ if (!customElements.get('product-form')) {
         itemsFormData.append('items[1][id]', giftWrapVariantId);
         itemsFormData.append('items[1][quantity]', 1);
         itemsFormData.append('items[1][parent_id]', formData.get('id'));
+        // @note: private property (leading underscore) so the cart can tell gift wrap lines apart from other add-ons
+        itemsFormData.append('items[1][properties][_gift_wrap]', 'true');
 
         return itemsFormData;
       }
