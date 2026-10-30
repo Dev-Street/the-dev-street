@@ -41,7 +41,7 @@
         "gift_wrap_DTpiHD": {
           "type": "gift_wrap",
           "settings": {
-            "gift_wrap_product": ""
+            "gift_wrap_product": "gift-wrap"
           }
         },
         "buy_buttons": {
