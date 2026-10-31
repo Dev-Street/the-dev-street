@@ -1,3 +1,18 @@
+{% comment %}
+  Gift wrap
+
+  Lets customers add gift wrapping and a personalised message to a product.
+  The message is saved as line item properties on the product. If a gift wrap
+  product is selected in the block settings, it is added to the cart as a
+  nested line under the product so its price is charged.
+
+  Accepts:
+  - block: {Object} - The gift_wrap block from main-product
+  - product_form_id: {String} - ID of the product form the inputs submit with
+
+  Usage:
+  {% render 'gift-wrap', block: block, product_form_id: product_form_id %}
+{% endcomment %}
 {%- liquid
     assign property_gift_wrap = 'Gift wrap'
     assign property_to = 'To'
