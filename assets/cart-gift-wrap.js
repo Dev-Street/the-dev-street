@@ -95,7 +95,8 @@
      * @returns {Object} A copy of the product line's current properties
      */
     getProperties() {
-      return JSON.parse(this.dataset.properties);
+      const properties = JSON.parse(this.dataset.properties);
+      return Array.isArray(properties) ? Object.fromEntries(properties) : properties;
     }
 
     /**

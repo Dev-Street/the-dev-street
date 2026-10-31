@@ -24,6 +24,7 @@
 {%- endunless -%}
 
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'cart-gift-wrap.js' | asset_url }}" defer="defer"></script>
 
 <cart-items
   class="gradient color-{{ section.settings.color_scheme }} isolate{% if cart == empty %} is-empty{% else %} section-{{ section.id }}-padding{% endif %}"
@@ -82,6 +83,19 @@
 
               <tbody>
                 {%- for item in cart.items -%}
+                  {%- liquid
+                    # Gift wrap lines are shown in their product's gift wrap summary instead
+                    if item.properties['_gift_wrap']
+                      continue
+                    endif
+
+                    # Property names must match snippets/gift-wrap.liquid
+                    assign gift_wrap_properties = 'Gift wrap,To,From,Gift message' | split: ','
+                    assign has_gift_wrap = false
+                    if item.properties['Gift wrap']
+                      assign has_gift_wrap = true
+                    endif
+                  -%}
                   <tr
                     class="cart-item {% if item.parent_relationship.parent != null %}cart-item__nested-line{% endif %}"
                     id="CartItem-{{ item.index | plus: 1 }}"
@@ -445,6 +459,14 @@
                       </div>
                     </td>
                   </tr>
+
+                  {%- if has_gift_wrap -%}
+                    <tr>
+                      <td colspan="5" class="tw-pb-8">
+                        {%- render 'cart-gift-wrap', item: item, id_prefix: 'CartPageGiftWrap' -%}
+                      </td>
+                    </tr>
+                  {%- endif -%}
                 {%- endfor -%}
               </tbody>
             </table>
