@@ -67,8 +67,7 @@
       for (const inputEl of this.inputEls) {
         const name = inputEl.dataset.giftWrapInput;
         const value = inputEl.value.trim();
-        delete properties[name];
-        if (value) properties[name] = value;
+        properties[name] = value || null;
       }
 
       await this.changeLine({ id: this.dataset.lineKey, quantity: Number(this.dataset.quantity), properties });
@@ -86,7 +85,7 @@
         this.toggleEl.dataset.giftWrapToggle,
         ...this.inputEls.map((inputEl) => inputEl.dataset.giftWrapInput),
       ];
-      for (const name of giftWrapProperties) delete properties[name];
+      for (const name of giftWrapProperties) properties[name] = null;
 
       await this.changeLine({ id: this.dataset.lineKey, quantity: Number(this.dataset.quantity), properties });
     }
