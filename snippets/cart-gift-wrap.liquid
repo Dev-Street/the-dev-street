@@ -7,6 +7,7 @@
 
   Accepts:
   - item: {Object} - The cart line item gift wrap was added to
+  - id_prefix: {String} - Prefix for element IDs, so the panel can render in the drawer and on the cart page at once. Defaults to 'CartGiftWrap' (optional)
 
   Usage:
   {% render 'cart-gift-wrap', item: item %}
@@ -42,7 +43,7 @@
   endfor
 
   assign label = 'products.product.gift_wrap.label' | t
-  assign id_prefix = 'CartGiftWrap-' | append: item.index
+  assign id_prefix = id_prefix | default: 'CartGiftWrap' | append: '-' | append: item.index
   assign toggle_id = id_prefix | append: '-Toggle'
   assign fields_id = id_prefix | append: '-Fields'
   assign to_id = id_prefix | append: '-To'
